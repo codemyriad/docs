@@ -1,4 +1,4 @@
-### purpose
+## purpose
 
 A reference guide for writing end-to-end (e2e) tests with Playwright.
 
@@ -9,9 +9,9 @@ This document serves two main purposes:
 
 It is a _living document_, meant to evolve as we refine our practices. Updates should be made as we learn, and existing patterns should be challenged when they no longer prove effective.
 
-#### test setup
+### test setup
 
-##### test data
+#### test data
 
 1. Test data should be consistent. In most cases, test data should remain the same across all test runs. For example, `book1` should always reference the same `isbn`, `title`, `authors`, etc. This consistency makes debugging easier and helps maintain sanity. It is especially crucial when testing scenarios at the end of a series of user flows, where test data accumulates into a final result that we need to assert against.
 2. Test data should be easy to reference. Store all test data in a single file as clearly defined declarations. Ideally, it should be [annotated with JSDoc comments](https://github.com/librocco/librocco/blob/main/apps/e2e/helpers/fixtures.ts#L97C1-L171C3) to improve visibility across other files (e.g., via IDE tooltips).
@@ -19,9 +19,9 @@ It is a _living document_, meant to evolve as we refine our practices. Updates s
    1. To generate consistent test data upfront. This helps us avoid our tendencies to use the same unimaginative strings ("janedoe@mail.com") in every project. FakerJs' guide on [creating complex objects](https://fakerjs.dev/guide/usage.html#create-complex-objects) is useful for setting up a structured “seed” script.
    2. For test cases that explicitly aim to check how a system handles variability.
 
-##### fixtures
+#### fixtures
 
-###### notes
+##### notes
 
 The [playwright docs](https://playwright.dev/docs/test-fixtures) provide a comprehensive intro. The key highlights are:
 
@@ -70,11 +70,7 @@ The [playwright docs](https://playwright.dev/docs/test-fixtures) provide a compr
       });
       ```
 
-    ```
-
-    ```
-
-###### rules
+##### rules
 
 1. Fixtures should have a single responsibility. Each fixture should set up only one piece of state or a single utility-resource. Instead of handling multiple concerns, fixtures should be chained together. For example, in an SQL model with two related tables—`customer_orders` and `customer_order_lines`—each should be set up as an independent fixture, with `customer_order_lines` referencing `customer_orders`.
 2. Fixtures should return the test data declaration, not the result of a database call. Instead of returning data retrieved from the database, fixtures should provide the test data declaration —the values that are being inserted or used. This ensures tests remain predictable and do not depend on the database.
@@ -91,7 +87,7 @@ The [playwright docs](https://playwright.dev/docs/test-fixtures) provide a compr
    });
    ```
 
-###### examples
+##### examples
 
 1. [This repo](https://github.com/ncrmro/remix-supabase-playwright/blob/main/e2e/fixtures.ts#L10) acted as some initial inspiration:
    - It sets up a Supabase client as a worker fixture
@@ -107,15 +103,15 @@ The [playwright docs](https://playwright.dev/docs/test-fixtures) provide a compr
    2. It sets up highly modular fixtures, ensuring that each test depends only on the specific domain entities it requires.
    3. It uses [Playwright's `evaluateHandle`](https://playwright.dev/docs/api/class-page#page-evaluate-handle) to write to the test page's browser storage. This allows setup to be run in apps that depend on local storage (see [working with browser state: indexedDb](#indexeddb))
 
-##### page hydration
+#### page hydration
 
 Waiting for page hydration is essential to ensure that SvelteKit (or any modern framework) has finished loading before Playwright begins making assertions. Skipping this step can lead to flaky tests that fail unpredictably without a clear cause.
 
 [This blog post](https://spin.atomicobject.com/hydration-sveltekit-tests/) was a lifesaver after much frustration. It references [this Playwright issue](https://github.com/microsoft/playwright/issues/19858#issuecomment-1377088645), which points to the Playwright setup in the official Svelte repo—so you know it’s solid.
 
-##### working with browser state
+#### working with browser state
 
-###### indexedDb
+##### indexedDb
 
 > :construction: TODO: Improve Write Up
 
@@ -126,19 +122,19 @@ When an application relies on local storage, setting up test data can be challen
 - Our handlers are exposed globally via `window` when `IS_E2E` is set [in the route layout](https://github.com/librocco/librocco/blob/main/apps/web-client/src/routes/%2Blayout.svelte)
 - [Potential improvements and open discussions](https://github.com/librocco/librocco/issues/780)
 
-###### cookies
+##### cookies
 
 To emulate a user session while using Supabase, the cookies returned from `signInWith...` need to be set in the test page’s context. Playwright provides [documentation on managing authenticated state](https://playwright.dev/docs/auth), but the recommended approach didn't work in this case. The solution currently used in WhatisEdible can be found in [this utility](https://github.com/whatisedible/Edible/blob/main/apps/e2e/lib/utils.ts#L148C1-L188C3).
 
-##### supabase
+#### supabase
 
 1. [Testing Supabase Magic Login in CI with Playwright](https://www.bekapod.dev/articles/supabase-magic-login-testing-with-playwright/)
 
-##### projects
+#### projects
+
+> :construction: TODO: I am exploring them with Edible, for running the same tests with different user accounts (free vs premium subscriptions). I will report back - Chris
 
 We currently don't use [projects](https://playwright.dev/docs/test-projects) for any reason other than running our tests in different browsers. They could be useful for more complex testing scenarios:
 
 1. [Coordinating global setup and teardown](https://playwright.dev/docs/test-global-setup-teardown)
 2. [Parameterizing projects](https://playwright.dev/docs/test-parameterize#parameterized-projects)
-
-> :construction: TODO: I am exploring them with Edible, for running the same tests with different user accounts (free vs premium subscriptions). I will report back - Chris
