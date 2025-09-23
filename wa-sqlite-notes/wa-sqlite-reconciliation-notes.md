@@ -207,7 +207,6 @@ Notes:
 
 Includes a large change in original repo (merge of `dev` branch -> v1.0)
 
-- some changes re yarn 
 - bump emscripten version `3.1.45` -> `3.1.47` (done in CI job, but also applicable to wrapping processes, e.g. `crsqlite-wasm`)
 - some changes re yarn (too many to break down, shouldn't really affect the cr-sqlite usage)
 - updates to demo (too many to break down, shouldn't really affect the cr-sqlite usage)
